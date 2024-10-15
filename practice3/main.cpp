@@ -26,6 +26,7 @@ int main(void)
 		break;
 	default :
 		printf("잘못된 수식입니다.\n");
+		break;
 	}
 
 	printf("계산결과 : %d\n", result);
