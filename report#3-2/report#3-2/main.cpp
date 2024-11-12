@@ -29,7 +29,8 @@ double dcalculateStandardDeviation(double variance)
     return sqrt(variance);  // 표준편차 계산
 }
 
-int main() {
+int main() 
+{
     int min, max;
     int num;
     double total = 0.0, totalSquared = 0.0;
@@ -40,7 +41,8 @@ int main() {
     printf("정수 생성 범위 (최소값과 최댓값을 입력하세요): ");
     scanf_s("%d %d", &min, &max);
 
-    if (min > max) {
+    if (min > max) 
+    {
         printf("잘못된 범위입니다. 최소값이 최댓값보다 클 수 없습니다.\n");
         return 0;
     }
