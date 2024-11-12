@@ -5,7 +5,7 @@
 
 void RandomNumbers(int min, int max, int* num) 
 {
-    *num = rand() % (max - min + 1) + min; // lower와 upper 사이에서 랜덤한 정수 생성
+    *num = rand() % (max - min + 1) + min; // 최소값과 최댓값 사이에서 랜덤한 정수 생성
 }
 
 double dcalculateSum(int num, double total) 
