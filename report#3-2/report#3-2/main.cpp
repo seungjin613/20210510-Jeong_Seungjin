@@ -3,76 +3,69 @@
 #include <time.h>
 #include <math.h>
 
-void generateRandomNumbers(int arr[], int size, int lower, int upper)// 무작위 정수를 생성하는 함수
+void RandomNumbers(int min, int max, int* num) 
 {
-    for (int i = 0; i < size; i++) {
-        arr[i] = rand() % (upper - lower + 1) + lower;  // lower부터 upper까지의 랜덤 정수 생성
-    }
+    *num = rand() % (max - min + 1) + min; // lower와 upper 사이에서 랜덤한 정수 생성
 }
 
-
-double calculateSum(int arr[], int size) // 총합을 계산하는 함수
+double dcalculateSum(int num, double total) 
 {
-    double total = 0.0;
-    for (int i = 0; i < size; i++) {
-        total += arr[i];
-    }
-    return total;
+    return total + num;  // 총합 계산
 }
 
-double calculateVariance(int arr[], int size, double mean) // 분산을 계산하는 함수
+double dcalculateSquaredSum(int num, double squaredTotal) 
 {
-    double variance = 0.0;
-    for (int i = 0; i < size; i++) {
-        variance += pow(arr[i] - mean, 2);
-    }
-    return variance / size;
+    return squaredTotal + num * num; // 제곱의 합 계산
 }
 
-double calculateStandardDeviation(double variance) // 표준편차를 계산하는 함수
+double dcalculateVariance(double totalSquared, double total, int count) 
 {
-    return sqrt(variance);
+    double mean = total / count;  // 분산 계산
+    return (totalSquared / count) - (mean * mean);
 }
 
-int main() 
+double dcalculateStandardDeviation(double variance) 
 {
-    int numbers[10];  // 10개의 정수를 저장할 배열
-    int lower, upper;
-    double total, average, variance, std;
+    return sqrt(variance);  // 표준편차 계산
+}
+
+int main() {
+    int min, max;
+    int num;
+    double total = 0.0, totalSquared = 0.0;
+    double average, variance, std;
 
     srand(time(NULL)); // 랜덤 시드 초기화
 
-    printf("정수 생성 범위 (최소값과 최댓값을 입력하세요): "); // 범위 입력 받기
-    scanf_s("%d %d", &lower, &upper);
+    printf("정수 생성 범위 (최소값과 최댓값을 입력하세요): ");
+    scanf_s("%d %d", &min, &max);
 
-    if (lower > upper)
-    {
-        printf("잘못된 범위입니다. 하한이 상한보다 클 수 없습니다.\n"); // 범위가 잘못된 경우
-        return 1;
+    if (min > max) {
+        printf("잘못된 범위입니다. 최소값이 최댓값보다 클 수 없습니다.\n");
+        return 0;
     }
 
-    generateRandomNumbers(numbers, 10, lower, upper); // 10개의 무작위 정수 생성
-
-    printf("생성된 정수들: ");
-
-    for (int i = 0; i < 10; i++) 
+    for (int i = 0; i < 10; i++) // 10번 반복하여 10개의 랜덤 정수를 생성하고 계산
     {
-        printf("%d ", numbers[i]);
+        RandomNumbers(min, max, &num); // 랜덤 정수 생성
+        printf("%d ", num); // 생성된 정수 출력
+
+        total = dcalculateSum(num, total); // 총합 계산
+        totalSquared = dcalculateSquaredSum(num, totalSquared); // 제곱의 합 계산
     }
+
     printf("\n");
 
-    total = calculateSum(numbers, 10); //총합 계산
+    average = total / 10.0;  // 평균 계산
 
-    average = total / 10.0; // 평균 계산
+    variance = dcalculateVariance(totalSquared, total, 10);  // 분산 계산
 
-    variance = calculateVariance(numbers, 10, average); // 분산 계산
-
-    std = calculateStandardDeviation(variance); // 표준편차 계산
+    std = dcalculateStandardDeviation(variance); // 표준편차 계산
 
     printf("총합: %.2f\n", total);
     printf("평균: %.2f\n", average);
     printf("분산: %.2f\n", variance);
-    printf("표준편차: %.2f\n", std); // 결과 출력
+    printf("표준편차: %.2f\n", std);  // 결과 출력
 
     return 0;
 }
