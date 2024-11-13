@@ -2,14 +2,14 @@
 #include <stdlib.h>
 #include <time.h>
 
-int RandomNumber() //무작위 숫자 생성 함수
+int RandomNum() //무작위 숫자 생성 함수
 {
     return rand();
 }
 
 void playGame(int Count) // 게임을 실행하는 함수
 {
-    int targetNum = RandomNumber();  // 정답
+    int targetNum = RandomNum();  // 정답
     int guess, attempts = 0;
 
     printf("0에서 부터 생성되는 랜덤의 숫자를 맞추세요! 기회는 %d번입니다.\n", Count);
