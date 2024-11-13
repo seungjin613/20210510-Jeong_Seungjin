@@ -3,28 +3,28 @@
 #include <time.h>
 #include <math.h>
 
-void RandomNumbers(int min, int max, int* num) 
+void RandomNum(int min, int max, int* num) 
 {
     *num = rand() % (max - min + 1) + min; // 최소값과 최댓값 사이에서 랜덤한 정수 생성
 }
 
-double dcalculateSum(int num, double total) 
+double dcalSum(int num, double total) 
 {
     return total + num;  // 총합 계산
 }
 
-double dcalculateSquaredSum(int num, double squaredTotal) 
+double dcalSqadSum(int num, double sqaTotal) 
 {
-    return squaredTotal + num * num; // 제곱의 합 계산
+    return sqaTotal + num * num; // 제곱의 합 계산
 }
 
-double dcalculateVariance(double totalSquared, double total, int count) 
+double dcalVar(double totalSqa, double total, int count) 
 {
     double mean = total / count;  // 분산 계산
-    return (totalSquared / count) - (mean * mean);
+    return (totalSqa / count) - (mean * mean);
 }
 
-double dcalculateStandardDeviation(double variance) 
+double dcalStadDev(double variance) 
 {
     return sqrt(variance);  // 표준편차 계산
 }
@@ -33,7 +33,7 @@ int main()
 {
     int min, max;
     int num;
-    double total = 0.0, totalSquared = 0.0;
+    double total = 0.0, totalSqa = 0.0;
     double average, variance, std;
 
     srand(time(NULL)); // 랜덤 시드 초기화
@@ -49,20 +49,20 @@ int main()
 
     for (int i = 0; i < 10; i++) // 10번 반복하여 10개의 랜덤 정수를 생성하고 계산
     {
-        RandomNumbers(min, max, &num); // 랜덤 정수 생성
+        RandomNum(min, max, &num); // 랜덤 정수 생성
         printf("%d ", num); // 생성된 정수 출력
 
-        total = dcalculateSum(num, total); // 총합 계산
-        totalSquared = dcalculateSquaredSum(num, totalSquared); // 제곱의 합 계산
+        total = dcalSum(num, total); // 총합 계산
+        totalSqa = dcalSqadSum(num, totalSqa); // 제곱의 합 계산
     }
 
     printf("\n");
 
     average = total / 10.0;  // 평균 계산
 
-    variance = dcalculateVariance(totalSquared, total, 10);  // 분산 계산
+    variance = dcalVar(totalSqa, total, 10);  // 분산 계산
 
-    std = dcalculateStandardDeviation(variance); // 표준편차 계산
+    std = dcalStadDev(variance); // 표준편차 계산
 
     printf("총합: %.2f\n", total);
     printf("평균: %.2f\n", average);
