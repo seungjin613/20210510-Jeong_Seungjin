@@ -9,11 +9,11 @@ void GArray(double arr[], int size, int iint) // 배열 생성 함수
     {
         if(iint)
         {
-            arr[i] = rand() % 201 - 100; // -100 ~ +100 범위 정수
+            *(arr+i) = rand() % 201 - 100; // -100 ~ +100 범위 정수
         }
         else if(iint)
         {
-            arr[i] = ((double)rand() / RAND_MAX) * 200.0 - 100.0; // -100.0 ~ +100.0 범위
+            *(arr+i) = ((double)rand() / RAND_MAX) * 200.0 - 100.0; // -100.0 ~ +100.0 범위
 
         }
     }
@@ -23,7 +23,7 @@ void PrintArray(double arr[], int size)// 배열 출력 함수
 {
     for (int i = 0; i < size; i++) 
     {
-        printf("%.1f ", arr[i]);
+        printf("%.1f ", *(arr+i));
     }
     printf("\n");
 }
@@ -32,7 +32,7 @@ void CalcInverseArray(double arr[], double inverseArr[], int size) // 배열 역순 
 {
     for (int i = 0; i < size; i++) 
     {
-        inverseArr[i] = arr[size - 1 - i]; // 역순으로 저장
+        *(inverseArr+i) = *(arr+size - 1 - i); // 역순으로 저장
     }
 }
 

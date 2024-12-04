@@ -6,7 +6,7 @@ void GArray(int arr[], int size)// 배열 생성 함수
 {
     for (int i = 0; i < size; i++)
     {
-        arr[i] = rand() % 101; // 0~100 사이의 랜덤 정수 생성
+        *(arr+i) = rand() % 101; // 0~100 사이의 랜덤 정수 생성
     }
 }
 
@@ -14,7 +14,7 @@ void PrintArray(int arr[], int size) // 배열 출력 함수
 {
     for (int i = 0; i < size; i++) 
     {
-        if (arr[i] != -1) // 의미 없는 공간 제외
+        if (*(arr+i) != -1) // 의미 없는 공간 제외
         {
             printf("%d ", arr[i]);
         }
@@ -28,7 +28,7 @@ void CalcEvenOddArray(int arr[], int evenArr[], int oddArr[], int size) // 짝수�
 
     for (int i = 0; i < size; i++) 
     {
-        if (arr[i] % 2 == 0) 
+        if (*(arr+i) % 2 == 0) 
         {
             evenArr[evenIndex++] = arr[i]; // 짝수 저장
         }
@@ -41,11 +41,11 @@ void CalcEvenOddArray(int arr[], int evenArr[], int oddArr[], int size) // 짝수�
     // 남은 공간을 -1로 초기화
     for (int i = evenIndex; i < size; i++) 
     {
-        evenArr[i] = -1;
+        *(evenArr+i) = -1;
     }
     for (int i = oddIndex; i < size; i++) 
     {
-        oddArr[i] = -1;
+        *(oddArr+i) = -1;
     }
 }
 
