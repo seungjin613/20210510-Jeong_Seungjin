@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-void GArray(int arr[], int size)// 배열 생성 함수
+void GArray(int *arr, int size)// 배열 생성 함수
 {
     for (int i = 0; i < size; i++)
     {
@@ -10,7 +10,7 @@ void GArray(int arr[], int size)// 배열 생성 함수
     }
 }
 
-void PrintArray(int arr[], int size) // 배열 출력 함수
+void PrintArray(int *arr, int size) // 배열 출력 함수
 {
     for (int i = 0; i < size; i++) 
     {
@@ -22,7 +22,7 @@ void PrintArray(int arr[], int size) // 배열 출력 함수
     printf("\n");
 }
 
-void CalcEvenOddArray(int arr[], int evenArr[], int oddArr[], int size) // 짝수와 홀수 분리 함수
+void CalcEvenOddArray(int *arr, int *evenArr, int *oddArr, int size) // 짝수와 홀수 분리 함수
 {
     int evenIndex = 0, oddIndex = 0;
 

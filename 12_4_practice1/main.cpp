@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-void GArray(double arr[], int size, int iint) //배열 생성 함수
+void GArray(double *arr, int size, int iint) //배열 생성 함수
 {
     for (int i = 0; i < size; i++)
     {
@@ -17,7 +17,7 @@ void GArray(double arr[], int size, int iint) //배열 생성 함수
     }
 }
 
-void CalcSortArray(double arr[], int size, int ascending) //배열 정렬 함수
+void CalcSortArray(double *arr, int size, int ascending) //배열 정렬 함수
 {
     for (int i = 0; i < size - 1; i++)
     {
@@ -33,7 +33,7 @@ void CalcSortArray(double arr[], int size, int ascending) //배열 정렬 함수
     }
 }
 
-void PrintArray(double arr[], int size)//배열 출력 함수
+void PrintArray(double *arr, int size)//배열 출력 함수
 {
     for (int i = 0; i < size; i++)
     {
@@ -41,9 +41,6 @@ void PrintArray(double arr[], int size)//배열 출력 함수
     }
     printf("\n");//배열이 다 출력된 후 한줄 내리기
 }
-
-
-
 
 int main(void)
 {
