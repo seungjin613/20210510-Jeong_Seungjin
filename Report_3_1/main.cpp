@@ -23,9 +23,9 @@ unsigned int GenRandFlipcoin(unsigned int nRange)
     unsigned int nNum = rand();
     while (1)
     {
-        nRes = ((unsigned int)(rand()) % (nRange));
+        nRes = ((unsigned int)(rand()) % (nRange));//nRange는 coin_fwd_bwd를 받고 있어서 rand()가 3으로 나눠진다. 그러기 때문에 0이나 1또는 2의 값을 받아서 앞면인지 뒷면인지 알 수 있다.
         if ((nRes == coin_fwd_status) || (nRes == coin_bwd_status))
-        break;
+        break;//여기서 0은 걸러지고 1또는 2의 값으로만 앞면 뒷면을 갖는다.
     }
     return nRes;
 }
