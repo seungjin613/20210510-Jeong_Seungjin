@@ -2,8 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-// 과목 열거형 정의
-typedef enum 
+typedef enum //과목 열거형 정의
 {
     KOREAN,
     MATH,
@@ -13,187 +12,227 @@ typedef enum
 
 #define MAX_STUDENTS 200
 
-// 학생 정보 구조체 정의
-typedef struct 
+
+typedef struct //학생 구조체 정의
 {
     char name[50];
-    int nId;
-    int nScores[SUBJECT_COUNT];
-    double dAverage;
-    int nClassRank;
-    int nOverallRank;
+    int Studentnum;
+    int scores[SUBJECT_COUNT];
+    double average;
+    int ClassRank;
+    int OverallRank;
 } Student;
 
-// 함수 선언
-void loadStudents(FILE* file, Student students[][MAX_STUDENTS], int* nStudentCounts, int classIndex);
-void calculateAverage(Student students[][MAX_STUDENTS], int nStudentCounts[], int classIndex);
-void calculateRanks(Student students[][MAX_STUDENTS], int nStudentCounts[], int classIndex);
-void calculateOverallRanks(Student students[][MAX_STUDENTS], int nStudentCounts[]);
-void saveResults(const char* fileName, Student students[][MAX_STUDENTS], int nStudentCounts[], int classIndex);
-void saveClassSummary(const char* fileName, Student students[][MAX_STUDENTS], int nStudentCounts[]);
+void loadStudents(FILE* file, Student students[][MAX_STUDENTS], int* StudentCounts, int classIndex)
+{
+    while (fscanf_s(file, "%49s %d %d %d %d",
+        students[classIndex][StudentCounts[classIndex]].name,
+        (unsigned)_countof(students[classIndex][StudentCounts[classIndex]].name),
+        &students[classIndex][StudentCounts[classIndex]].Studentnum,
+        &students[classIndex][StudentCounts[classIndex]].scores[KOREAN],
+        &students[classIndex][StudentCounts[classIndex]].scores[MATH],
+        &students[classIndex][StudentCounts[classIndex]].scores[ENGLISH]) == 5)
+    {
+        StudentCounts[classIndex]++;
+    }
+}
+
+void CAverage(Student students[][MAX_STUDENTS], int StudentCounts[], int classIndex)
+{
+    for (int i = 0; i < StudentCounts[classIndex]; i++)
+    {
+        int Total = 0;
+        for (int j = 0; j < SUBJECT_COUNT; j++) 
+        {
+            Total += students[classIndex][i].scores[j];
+        }
+        students[classIndex][i].average = Total / (double)SUBJECT_COUNT;
+    }
+}
+
+void CRanks(Student students[][MAX_STUDENTS], int StudentCounts[], int classIndex)
+{
+    for (int i = 0; i < StudentCounts[classIndex]; i++)
+    {
+        int Rank = 1;
+        for (int j = 0; j < StudentCounts[classIndex]; j++)
+        {
+            if (students[classIndex][j].average > students[classIndex][i].average)
+            {
+                Rank++;
+            }
+        }
+        students[classIndex][i].ClassRank = Rank;
+    }
+}
+
+void COverallRanks(Student students[][MAX_STUDENTS], int StudentCounts[]) 
+{
+    Student allStudents[MAX_STUDENTS * 2];
+    int totalStudents = StudentCounts[0] + StudentCounts[1];
+
+    for (int i = 0; i < StudentCounts[0]; i++)  //합쳐진 학생 배열 생성
+    {
+        allStudents[i] = students[0][i];
+    }
+    for (int i = 0; i < StudentCounts[1]; i++)
+    {
+        allStudents[StudentCounts[0] + i] = students[1][i];
+    }
+
+
+    for (int i = 0; i < totalStudents; i++)//전체 등수 계산
+    {
+        int Rank = 1;
+        for (int j = 0; j < totalStudents; j++) 
+        {
+            if (allStudents[j].average > allStudents[i].average)
+            {
+                Rank++;
+            }
+        }
+        allStudents[i].OverallRank = Rank;
+    }
+
+    for (int i = 0; i < StudentCounts[0]; i++)//전체 등수를 각 분반에 다시 매핑
+    {
+        for (int j = 0; j < totalStudents; j++) 
+        {
+            if (students[0][i].Studentnum == allStudents[j].Studentnum)
+            {
+                students[0][i].OverallRank = allStudents[j].OverallRank;
+                break;
+            }
+        }
+    }
+    for (int i = 0; i < StudentCounts[1]; i++)
+    {
+        for (int j = 0; j < totalStudents; j++) 
+        {
+            if (students[1][i].Studentnum == allStudents[j].Studentnum)
+            {
+                students[1][i].OverallRank = allStudents[j].OverallRank;
+                break;
+            }
+        }
+    }
+}
+
+void saveResults(const char* File, Student students[][MAX_STUDENTS], int StudentCounts[], int classIndex)
+{
+    FILE* file;
+    if (fopen_s(&file, File, "w") != 0)
+    {
+        perror("파일 쓰기 실패");
+        exit(1);
+    }
+
+    for (int i = 0; i < StudentCounts[classIndex]; i++)
+    {
+        fprintf(file, "학번: %d\n이름: %s\n국어: %d\n수학: %d\n영어: %d\n평균: %.2f\n분반 등수: %d\n전체 등수: %d\n\n",
+            students[classIndex][i].Studentnum,
+            students[classIndex][i].name,
+            students[classIndex][i].scores[KOREAN],
+            students[classIndex][i].scores[MATH],
+            students[classIndex][i].scores[ENGLISH],
+            students[classIndex][i].average,
+            students[classIndex][i].ClassRank,
+            students[classIndex][i].OverallRank);
+    }
+
+    fclose(file);
+}
+
+void saveClassSummary(const char* File, Student students[][MAX_STUDENTS], int StudentCounts[])
+{
+    FILE* file;
+    if (fopen_s(&file, File, "w") != 0)
+    {
+        perror("파일 쓰기 실패");
+        exit(1);
+    }
+
+    double Sum_1 = 0, Sum_2 = 0;
+    for (int i = 0; i < StudentCounts[0]; i++)
+    {
+        Sum_1 += students[0][i].average;
+    }
+    for (int i = 0; i < StudentCounts[1]; i++)
+    {
+        Sum_2 += students[1][i].average;
+    }
+
+    fprintf(file, "=== 클래스 요약 ===\n\n");
+
+    fprintf(file, "분반 1 학생 수: %d명\n", StudentCounts[0]);
+    fprintf(file, "분반 2 학생 수: %d명\n\n", StudentCounts[1]);
+
+    fprintf(file, "분반 1\n");
+    fprintf(file, "분반 1 평균 점수: %.2f\n", StudentCounts[0] > 0 ?
+        Sum_1 / StudentCounts[0] : 0);
+    fprintf(file, "분반 1 학생의 분반 등수:\n");
+    for (int i = 0; i < StudentCounts[0]; i++)
+    {
+        fprintf(file, "%s (학번: %d) - 분반 등수: %d\n",
+            students[0][i].name, students[0][i].Studentnum, students[0][i].ClassRank);
+    }
+    fprintf(file, "\n");
+
+    fprintf(file, "분반 2\n");
+    fprintf(file, "분반 2 평균 점수: %.2f\n", StudentCounts[1] > 0 ? Sum_2 / StudentCounts[1] : 0);
+    fprintf(file, "분반 2 학생의 분반 등수:\n");
+    for (int i = 0; i < StudentCounts[1]; i++)
+    {
+        fprintf(file, "%s (학번: %d) - 분반 등수: %d\n",
+            students[1][i].name, students[1][i].Studentnum, students[1][i].ClassRank);
+    }
+    fprintf(file, "\n");
+
+    fprintf(file, "전체 평균\n");// 전체 평균 계산
+    fprintf(file, "전체 평균 점수: %.2f\n", (StudentCounts[0] + StudentCounts[1]) > 0 ?
+        (Sum_1 + Sum_2) / (StudentCounts[0] + StudentCounts[1]) : 0);
+    fprintf(file, "\n");
+
+    fclose(file);
+}
 
 int main(void) 
 {
     Student students[2][MAX_STUDENTS]; // 2차원 배열: [분반][학생 인덱스]
-    int nStudentCounts[2] = { 0, 0 }; // 각 분반의 학생 수
+    int StudentCounts[2] = { 0, 0 }; // 각 분반의 학생 수
 
-    // 파일 포인터 생성
-    FILE* file1;
-    FILE* file2;
+    FILE* file_1;//파일 포인터 생성
+    FILE* file_2;
 
-    if (fopen_s(&file1, "C:\\Users\\82105\\Downloads\\students_1.txt", "r") != 0)
+    if (fopen_s(&file_1, "C:\\Users\\82105\\Downloads\\students_1.txt", "r") != 0)
     {
         perror("students_1.txt 열기 실패");
         exit(1);
     }
 
-    if (fopen_s(&file2, "C:\\Users\\82105\\Downloads\\students_2.txt", "r") != 0) 
+    if (fopen_s(&file_2, "C:\\Users\\82105\\Downloads\\students_2.txt", "r") != 0)
     {
         perror("students_2.txt 열기 실패");
-        fclose(file1);
+        fclose(file_1);
         exit(1);
     }
 
-    // 학생 정보 파일 로드
-    loadStudents(file1, students, nStudentCounts, 0);
-    loadStudents(file2, students, nStudentCounts, 1);
+    loadStudents(file_1, students, StudentCounts, 0);//학생 정보 파일 불러오기
+    loadStudents(file_2, students, StudentCounts, 1);
 
-    fclose(file1);
-    fclose(file2);
+    fclose(file_1);
+    fclose(file_2);
 
-    // 평균 및 등수 계산
-    calculateAverage(students, nStudentCounts, 0);
-    calculateAverage(students, nStudentCounts, 1);
-    calculateRanks(students, nStudentCounts, 0);
-    calculateRanks(students, nStudentCounts, 1);
-    calculateOverallRanks(students, nStudentCounts);
+    CAverage(students, StudentCounts, 0);//평균 및 등수 계산
+    CAverage(students, StudentCounts, 1);
+    CRanks(students, StudentCounts, 0);
+    CRanks(students, StudentCounts, 1);
+    COverallRanks(students, StudentCounts);
 
-    // 파일 저장
-    saveResults("students_1_results.txt", students, nStudentCounts, 0);
-    saveResults("students_2_results.txt", students, nStudentCounts, 1);
-    saveClassSummary("class_results.txt", students, nStudentCounts);
+    saveResults("students_1_results.txt", students, StudentCounts, 0);//파일 저장
+    saveResults("students_2_results.txt", students, StudentCounts, 1);
+    saveClassSummary("class_results.txt", students, StudentCounts);
 
     printf("결과 파일이 성공적으로 생성되었습니다.\n");
     return 0;
-}
-
-void loadStudents(FILE* file, Student students[][MAX_STUDENTS], int* nStudentCounts, int classIndex) {
-    while (fscanf_s(file, "%49s %d %d %d %d",
-        students[classIndex][nStudentCounts[classIndex]].name,
-        (unsigned)_countof(students[classIndex][nStudentCounts[classIndex]].name),
-        &students[classIndex][nStudentCounts[classIndex]].nId,
-        &students[classIndex][nStudentCounts[classIndex]].nScores[KOREAN],
-        &students[classIndex][nStudentCounts[classIndex]].nScores[MATH],
-        &students[classIndex][nStudentCounts[classIndex]].nScores[ENGLISH]) == 5) {
-        nStudentCounts[classIndex]++;
-    }
-}
-
-void calculateAverage(Student students[][MAX_STUDENTS], int nStudentCounts[], int classIndex) {
-    for (int i = 0; i < nStudentCounts[classIndex]; i++) {
-        int nTotal = 0;
-        for (int j = 0; j < SUBJECT_COUNT; j++) {
-            nTotal += students[classIndex][i].nScores[j];
-        }
-        students[classIndex][i].dAverage = nTotal / (double)SUBJECT_COUNT;
-    }
-}
-
-void calculateRanks(Student students[][MAX_STUDENTS], int nStudentCounts[], int classIndex) {
-    for (int i = 0; i < nStudentCounts[classIndex]; i++) {
-        int nRank = 1;
-        for (int j = 0; j < nStudentCounts[classIndex]; j++) {
-            if (students[classIndex][j].dAverage > students[classIndex][i].dAverage) {
-                nRank++;
-            }
-        }
-        students[classIndex][i].nClassRank = nRank;
-    }
-}
-
-void calculateOverallRanks(Student students[][MAX_STUDENTS], int nStudentCounts[]) {
-    Student allStudents[MAX_STUDENTS * 2];
-    int totalStudents = nStudentCounts[0] + nStudentCounts[1];
-
-    // 합쳐진 학생 배열 생성
-    for (int i = 0; i < nStudentCounts[0]; i++) {
-        allStudents[i] = students[0][i];
-    }
-    for (int i = 0; i < nStudentCounts[1]; i++) {
-        allStudents[nStudentCounts[0] + i] = students[1][i];
-    }
-
-    // 전체 등수 계산
-    for (int i = 0; i < totalStudents; i++) {
-        int nRank = 1;
-        for (int j = 0; j < totalStudents; j++) {
-            if (allStudents[j].dAverage > allStudents[i].dAverage) {
-                nRank++;
-            }
-        }
-        allStudents[i].nOverallRank = nRank;
-    }
-
-    // 전체 등수를 각 분반에 다시 매핑
-    for (int i = 0; i < nStudentCounts[0]; i++) {
-        for (int j = 0; j < totalStudents; j++) {
-            if (students[0][i].nId == allStudents[j].nId) {
-                students[0][i].nOverallRank = allStudents[j].nOverallRank;
-                break;
-            }
-        }
-    }
-    for (int i = 0; i < nStudentCounts[1]; i++) {
-        for (int j = 0; j < totalStudents; j++) {
-            if (students[1][i].nId == allStudents[j].nId) {
-                students[1][i].nOverallRank = allStudents[j].nOverallRank;
-                break;
-            }
-        }
-    }
-}
-
-void saveResults(const char* fileName, Student students[][MAX_STUDENTS], int nStudentCounts[], int classIndex) {
-    FILE* file;
-    if (fopen_s(&file, fileName, "w") != 0) {
-        perror("파일 쓰기 실패");
-        exit(1);
-    }
-
-    for (int i = 0; i < nStudentCounts[classIndex]; i++) {
-        fprintf(file, "학번: %d\n이름: %s\n국어: %d\n수학: %d\n영어: %d\n평균: %.2f\n분반 등수: %d\n전체 등수: %d\n\n",
-            students[classIndex][i].nId,
-            students[classIndex][i].name,
-            students[classIndex][i].nScores[KOREAN],
-            students[classIndex][i].nScores[MATH],
-            students[classIndex][i].nScores[ENGLISH],
-            students[classIndex][i].dAverage,
-            students[classIndex][i].nClassRank,
-            students[classIndex][i].nOverallRank);
-    }
-
-    fclose(file);
-}
-
-void saveClassSummary(const char* fileName, Student students[][MAX_STUDENTS], int nStudentCounts[]) {
-    FILE* file;
-    if (fopen_s(&file, fileName, "w") != 0) {
-        perror("파일 쓰기 실패");
-        exit(1);
-    }
-
-    double dSum1 = 0, dSum2 = 0;
-    for (int i = 0; i < nStudentCounts[0]; i++) {
-        dSum1 += students[0][i].dAverage;
-    }
-    for (int i = 0; i < nStudentCounts[1]; i++) {
-        dSum2 += students[1][i].dAverage;
-    }
-
-    fprintf(file, "분반 1 평균: %.2f\n", nStudentCounts[0] > 0 ?
-        dSum1 / nStudentCounts[0] : 0);
-    fprintf(file, "분반 2 평균: %.2f\n", nStudentCounts[1] > 0 ? dSum2 / nStudentCounts[1] : 0);
-    fprintf(file, "전체 평균: %.2f\n", (nStudentCounts[0] + nStudentCounts[1]) > 0 ? (dSum1 + dSum2) / (nStudentCounts[0] + nStudentCounts[1]) : 0);
-
-    fclose(file);
 }
