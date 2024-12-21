@@ -162,7 +162,7 @@ void saveClassSummary(const char* File, Student students[][MAX_STUDENTS], int St
         Sum_2 += students[1][i].average;
     }
 
-    fprintf(file, "=== 클래스 요약 ===\n\n");
+    fprintf(file, "전체 학생\n\n");
 
     fprintf(file, "분반 1 학생 수: %d명\n", StudentCounts[0]);
     fprintf(file, "분반 2 학생 수: %d명\n\n", StudentCounts[1]);
