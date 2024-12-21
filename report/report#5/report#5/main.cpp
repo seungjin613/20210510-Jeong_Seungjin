@@ -204,7 +204,7 @@ int main(void)
     FILE* file_1;//파일 포인터 생성
     FILE* file_2;
 
-    if (fopen_s(&file_1, "C:\\Users\\82105\\Downloads\\students_1.txt", "r") != 0)
+    if (fopen_s(&file_1, "C:\\Users\\82105\\Downloads\\students_1.txt", "r") != 0)//다운로드 파일에 있는 txt파일을 읽는다.
     {
         perror("students_1.txt 열기 실패");
         exit(1);
